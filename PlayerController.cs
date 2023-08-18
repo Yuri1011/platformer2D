@@ -14,13 +14,13 @@ public class PlayerController : MonoBehaviour {
     private bool isFacingRight = true;
     private bool isJump = false;
     private bool isGround = false;
-    private GameObject finish;
+    private Finish finish;
     private bool isFinished = false;
 
     void Start() {
         Debug.Log("Game Started");
         rb = GetComponent<Rigidbody2D>();
-        finish = GameObject.FindGameObjectWithTag("Finish");
+        finish = GameObject.FindGameObjectWithTag("Finish").GetComponent<Finish>();
     }
 
     void Update() {
@@ -35,7 +35,7 @@ public class PlayerController : MonoBehaviour {
         // Input.GetKey(KeyCode.D);
 
         if (Input.GetKeyDown(KeyCode.F) && isFinished) {
-            finish.SetActive(false);
+            finish.FinishLevel();
         }
     }
 
@@ -86,7 +86,7 @@ public class PlayerController : MonoBehaviour {
     //     }
     // }
 
-
+//срабатывает когда есть взаимодействие с коллайдером другого объекта, но с возможностью прохождения сквозь него.
     void OnTriggerEnter2D(Collider2D other) {
         if (other.gameObject.CompareTag("Finish")) {
             Debug.Log("FINISH");
