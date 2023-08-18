@@ -9,18 +9,22 @@ public class PlayerController : MonoBehaviour {
     [SerializeField] private Animator animator;
 
     private Rigidbody2D rb;
+    private Finish finish;
     const float speedXMultiplayer = 100f;
     private float horizontal = 0f;
     private bool isFacingRight = true;
     private bool isJump = false;
     private bool isGround = false;
-    private Finish finish;
     private bool isFinished = false;
+    private bool isLeverArm = false;
+    private LeverArm leverArm;
 
     void Start() {
         Debug.Log("Game Started");
         rb = GetComponent<Rigidbody2D>();
         finish = GameObject.FindGameObjectWithTag("Finish").GetComponent<Finish>();
+        // Здесь код пытается найти объект в сцене с компонентом типа LeverArm
+        leverArm = FindObjectOfType<LeverArm>();
     }
 
     void Update() {
@@ -34,8 +38,14 @@ public class PlayerController : MonoBehaviour {
         // Input.GetKey(KeyCode.A);
         // Input.GetKey(KeyCode.D);
 
-        if (Input.GetKeyDown(KeyCode.F) && isFinished) {
-            finish.FinishLevel();
+        if (Input.GetKeyDown(KeyCode.F)) {
+            if (isFinished) {
+                finish.FinishLevel();
+            }
+
+            if (isLeverArm) {
+                leverArm.ActivateLeverArm();
+            }
         }
     }
 
@@ -88,16 +98,26 @@ public class PlayerController : MonoBehaviour {
 
 //срабатывает когда есть взаимодействие с коллайдером другого объекта, но с возможностью прохождения сквозь него.
     void OnTriggerEnter2D(Collider2D other) {
+        LeverArm leverArmTemp = other.GetComponent<LeverArm>();
         if (other.gameObject.CompareTag("Finish")) {
             Debug.Log("FINISH");
             isFinished = true;
         }
+
+        if(leverArmTemp) {
+            isLeverArm = true;  
+        }
     }
 
     void OnTriggerExit2D (Collider2D other) {
+        LeverArm leverArmTemp = other.GetComponent<LeverArm>();
         if (other.gameObject.CompareTag("Finish")) {
             Debug.Log("NOT FINISH");    
             isFinished = false;
+        }
+
+        if(leverArmTemp) {
+            isLeverArm = false;  
         }
     }
 }
