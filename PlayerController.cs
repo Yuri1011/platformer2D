@@ -14,22 +14,29 @@ public class PlayerController : MonoBehaviour {
     private bool isFacingRight = true;
     private bool isJump = false;
     private bool isGround = false;
+    private GameObject finish;
+    private bool isFinished = false;
 
     void Start() {
         Debug.Log("Game Started");
         rb = GetComponent<Rigidbody2D>();
+        finish = GameObject.FindGameObjectWithTag("Finish");
     }
 
     void Update() {
         //присваивает объекту движение по горизонту с помощью клавиш A D, стиков влево право, стрелок вправо влево.
         horizontal = Input.GetAxis("Horizontal"); // отвечает за движение персонажа по оси X влево -1 вправо 1
         animator.SetFloat("speedX", Mathf.Abs(horizontal)); // Mathf.Abs(horizontal) конвертирует -1 в 1 и 1 в 1
-        if (Input.GetKey(KeyCode.W) && isGround) {
+        if (Input.GetKey(KeyCode.Space)  && isGround) {
             isJump = true;
         }
         //можно таким образом достукиваться до кнопок.
         // Input.GetKey(KeyCode.A);
         // Input.GetKey(KeyCode.D);
+
+        if (Input.GetKeyDown(KeyCode.F) && isFinished) {
+            finish.SetActive(false);
+        }
     }
 
     //FixedUpdate служит для того, чтобы менять физику объекта.
@@ -58,10 +65,39 @@ public class PlayerController : MonoBehaviour {
         transform.localScale = playerScale;
     }
 
-    //вычисляет когда коллизии объектов соприкасаются
+    //OnCollisionEnter2D срабатывает когда коллизии объектов соприкасаются, тойсть когда игрок касается какого-то коллайдера
     void OnCollisionEnter2D(Collision2D other) {
+        //проверяем что какой-то игровой объект имеет коллайдер с тегом "Ground"
         if (other.gameObject.CompareTag("Ground")) {
             isGround = true;
+        }
+
+        // if (other.gameObject.CompareTag("Finish")) {
+        //     Debug.Log("FINISH");
+        //     isFinished = true;
+        // }
+    }
+
+//выход из коллизии объекта
+    // void OnCollisionExit2D (Collision2D other) {
+    //     if (other.gameObject.CompareTag("Finish")) {
+    //         Debug.Log("NOT FINISH");    
+    //         isFinished = false;
+    //     }
+    // }
+
+
+    void OnTriggerEnter2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Finish")) {
+            Debug.Log("FINISH");
+            isFinished = true;
+        }
+    }
+
+    void OnTriggerExit2D (Collider2D other) {
+        if (other.gameObject.CompareTag("Finish")) {
+            Debug.Log("NOT FINISH");    
+            isFinished = false;
         }
     }
 }
